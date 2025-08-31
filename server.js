@@ -21,11 +21,20 @@ if (process.env.node_env === "development") {
 app.use("/api/v1/categories", require("./routes/category.route"));
 //#endregion
 
-
+//#region Error Handling
 app.use(appError.notFoundRoute);
-
 app.use(appError.errorHandler);
+//#endregion
 
-app.listen(process.env.portNumber, () => {
+const server = app.listen(process.env.portNumber, () => {
   console.log(`Server is running on port ${process.env.portNumber}`);
+});
+
+//! Handle Exceptions outside express
+process.on("unhandledRejection", (err) => {
+  console.error("☠️ Unhandled Rejection : ☠️", err.name, err.message);
+  server.close(() => {
+    console.error("Shutting down...");
+    process.exit(1);
+  });
 });
