@@ -1,6 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const connectToDB = require("./config/db");
+const appError = require("./middleware/error");
 
 //#region config
 require("dotenv").config();
@@ -19,6 +20,11 @@ if (process.env.node_env === "development") {
 //#region Routes
 app.use("/api/v1/categories", require("./routes/category.route"));
 //#endregion
+
+
+app.use(appError.notFoundRoute);
+
+app.use(appError.errorHandler);
 
 app.listen(process.env.portNumber, () => {
   console.log(`Server is running on port ${process.env.portNumber}`);
