@@ -1,27 +1,22 @@
 const categoryController = require("../controllers/category.controller");
-const { param, validationResult } = require("express-validator");
+const {
+  getCategoryByIdValidator,
+  createCategoryValidator,
+  updateCategoryValidator,
+  deleteCategoryValidator,
+} = require("../utils/validators/categoryValidator");
 const express = require("express");
 const router = express.Router();
 
 router
   .route("/")
   .get(categoryController.getAllCategories)
-  .post(categoryController.createCategory);
+  .post(createCategoryValidator, categoryController.createCategory);
 
 router
   .route("/:id")
-  .get(
-    param("id").isMongoId().withMessage("Invalid category id"),
-    (req, res, next) => {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-      next();
-    },
-    categoryController.getCategoryById
-  )
-  .put(categoryController.updateCategory)
-  .delete(categoryController.deleteCategory);
+  .get(getCategoryByIdValidator, categoryController.getCategoryById)
+  .put(updateCategoryValidator, categoryController.updateCategory)
+  .delete(deleteCategoryValidator, categoryController.deleteCategory);
 
 module.exports = router;
