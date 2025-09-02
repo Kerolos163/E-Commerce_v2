@@ -1,3 +1,4 @@
+const express = require("express");
 const categoryController = require("../controllers/category.controller");
 const {
   getCategoryByIdValidator,
@@ -5,9 +6,8 @@ const {
   updateCategoryValidator,
   deleteCategoryValidator,
 } = require("../utils/validators/categoryValidator");
-const express = require("express");
-const router = express.Router();
 
+const router = express.Router();
 router
   .route("/")
   .get(categoryController.getAllCategories)

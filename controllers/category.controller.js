@@ -2,7 +2,7 @@ const slugify = require("slugify");
 const asyncHandler = require("express-async-handler");
 const Category = require("../models/CategoryModel");
 const httpStatus = require("../utils/http_status");
-const appError = require("../utils/appError");
+const AppError = require("../utils/appError");
 
 // @desc Get all categories
 // @route GET /api/v1/categories
@@ -31,14 +31,14 @@ exports.getAllCategories = asyncHandler(async (req, res, next) => {
 // @route GET /api/v1/categories/:id
 // @access Public
 exports.getCategoryById = asyncHandler(async (req, res, next) => {
-  const id = req.params.id;
+  const { id } = req.params;
   const category = await Category.findById(id, {
     __v: 0,
     createdAt: 0,
     updatedAt: 0,
   });
   if (!category) {
-    const err = new appError("Category not found", 404);
+    const err = new AppError("Category not found", 404);
     return next(err);
   }
 
@@ -52,7 +52,7 @@ exports.getCategoryById = asyncHandler(async (req, res, next) => {
 // @route POST /api/v1/categories
 // @access Private
 exports.createCategory = asyncHandler(async (req, res, next) => {
-  const name = req.body.name;
+  const { name } = req.body;
   const slug = slugify(name);
 
   const category = new Category({ name, slug });
@@ -68,8 +68,8 @@ exports.createCategory = asyncHandler(async (req, res, next) => {
 // @route PUT /api/v1/categories/:id
 // @access Private
 exports.updateCategory = asyncHandler(async (req, res, next) => {
-  const id = req.params.id;
-  const name = req.body.name;
+  const { id } = req.params;
+  const { name } = req.body;
   const slug = slugify(name);
 
   const category = await Category.findByIdAndUpdate(
@@ -79,7 +79,7 @@ exports.updateCategory = asyncHandler(async (req, res, next) => {
   );
 
   if (!category) {
-    const err = new appError("Category not found", 404);
+    const err = new AppError("Category not found", 404);
     return next(err);
   }
 
@@ -94,10 +94,10 @@ exports.updateCategory = asyncHandler(async (req, res, next) => {
 // @route DELETE /api/v1/categories/:id
 // @access Private
 exports.deleteCategory = asyncHandler(async (req, res, next) => {
-  const id = req.params.id;
+  const { id } = req.params;
   const category = await Category.findByIdAndDelete(id);
   if (!category) {
-    const err = new appError("Category not found", 404);
+    const err = new AppError("Category not found", 404);
     return next(err);
   }
 
