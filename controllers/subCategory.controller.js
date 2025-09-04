@@ -5,6 +5,12 @@ const httpStatus = require("../utils/http_status");
 const AppError = require("../utils/appError");
 
 // @route GET /api/v1/categories/:categoryId/subcategories
+exports.CreateFilter = (req, res, next) => {
+  let filter = {};
+  if (req.params.categoryId) filter = { category: req.params.categoryId };
+  req.filter = filter;
+  next();
+};
 
 // @desc Get all subcategories
 // @route GET /api/v1/subcategories
@@ -14,15 +20,12 @@ exports.getAllSubCategory = asyncHandler(async (req, res, next) => {
   const limit = +req.query.limit || 10;
   const skip = (page - 1) * limit;
   console.log(req.params.categoryId);
-  let filter = {};
-  if (req.params.categoryId) 
-    filter = { category: req.params.categoryId };
-  
 
-  const subCategory = await SubCategory.find(
-    filter,
-    { __v: 0, createdAt: 0, updatedAt: 0 }
-  )
+  const subCategory = await SubCategory.find(req.filter, {
+    __v: 0,
+    createdAt: 0,
+    updatedAt: 0,
+  })
     .populate("category", ["-__v"])
     .skip(skip)
     .limit(limit);
@@ -54,6 +57,10 @@ exports.getSubCategoryById = asyncHandler(async (req, res, next) => {
   });
 });
 
+exports.setCategoryIdToBody = (req, res, next) => {
+  if (!req.body.category) req.body.category = req.params.categoryId;
+  next();
+};
 // @desc Create new subcategories
 // @route POST /api/v1/subcategories
 // @access Private

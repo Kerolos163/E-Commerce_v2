@@ -12,8 +12,12 @@ const router = express.Router({ mergeParams: true });
 
 router
   .route("/")
-  .get(subCategoryController.getAllSubCategory)
-  .post(createSubCategoryValidator, subCategoryController.createSubCategory);
+  .get(subCategoryController.CreateFilter,subCategoryController.getAllSubCategory)
+  .post(
+    subCategoryController.setCategoryIdToBody,
+    createSubCategoryValidator,
+    subCategoryController.createSubCategory
+  );
 
 router
   .route("/:id")
