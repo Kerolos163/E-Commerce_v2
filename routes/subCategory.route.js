@@ -3,9 +3,12 @@ const subCategoryController = require("../controllers/subCategory.controller");
 const {
   createSubCategoryValidator,
   getSubCategoryByIdValidator,
+  updateSubCategoryValidator,
+  deleteSubCategoryValidator,
 } = require("../utils/validators/subCategoryValidator");
 
-const router = express.Router();
+//mergeParams: Allaw the router to merge params from the parent router
+const router = express.Router({ mergeParams: true });
 
 router
   .route("/")
@@ -14,6 +17,8 @@ router
 
 router
   .route("/:id")
-  .get(getSubCategoryByIdValidator, subCategoryController.getSubCategoryById);
+  .get(getSubCategoryByIdValidator, subCategoryController.getSubCategoryById)
+  .put(updateSubCategoryValidator, subCategoryController.updateSubCategory)
+  .delete(deleteSubCategoryValidator, subCategoryController.deleteSubCategory);
 
 module.exports = router;

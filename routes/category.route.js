@@ -8,6 +8,9 @@ const {
 } = require("../utils/validators/categoryValidator");
 
 const router = express.Router();
+
+router.use("/:categoryId/subcategories", require("./subCategory.route"));
+
 router
   .route("/")
   .get(categoryController.getAllCategories)
