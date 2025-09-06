@@ -1,6 +1,7 @@
 const { check } = require("express-validator");
 const validatorMiddleware = require("../../middleware/validatorMiddleware");
 const Category = require("../../models/CategoryModel");
+const SubCategory = require("../../models/SubCategoryModel");
 
 exports.createProductValidator = [
   check("title")
@@ -66,12 +67,22 @@ exports.createProductValidator = [
       return true;
     }),
 
-  check("subCategory")
+  check("subCategories")
     .optional()
     .isMongoId()
     .withMessage("Invalid subCategory id")
     .isArray()
-    .withMessage("SubCategory must be an array"),
+    .withMessage("SubCategory must be an array")
+    .custom(async (value, { req }) => {
+      const subCategories = await SubCategory.find({
+        _id: { $exists: true, $in: value },
+      });
+
+      if (subCategories.length !== value.length) {
+        throw new Error(`No subCategory found with id: ${value}`);
+      }
+      return true;
+    }),
 
   check("brand").optional().isMongoId().withMessage("Invalid brand id"),
 
