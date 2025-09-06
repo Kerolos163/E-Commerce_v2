@@ -16,6 +16,7 @@ exports.getAllProducts = asyncHandler(async (req, res, next) => {
     {},
     { __v: 0, createdAt: 0, updatedAt: 0 }
   )
+    .populate("category", ["-__v"])
     .skip(skip)
     .limit(limit);
 
@@ -36,7 +37,7 @@ exports.getProductById = asyncHandler(async (req, res, next) => {
     __v: 0,
     createdAt: 0,
     updatedAt: 0,
-  });
+  }).populate("category", ["-__v"]);
   if (!product) {
     const err = new AppError("Category not found", 404);
     return next(err);
@@ -70,11 +71,7 @@ exports.updateProduct = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
   req.body.slug = slugify(req.body.title);
 
-  const product = await Product.findByIdAndUpdate(
-    id,
-    req.body,
-    { new: true }
-  );
+  const product = await Product.findByIdAndUpdate(id, req.body, { new: true });
 
   if (!product) {
     const err = new AppError("Product not found", 404);

@@ -22,6 +22,7 @@ if (process.env.node_env === "development") {
 app.use("/api/v1/categories", require("./routes/category.route"));
 app.use("/api/v1/subCategories", require("./routes/subCategory.route"));
 app.use("/api/v1/brands", require("./routes/brand.route"));
+app.use("/api/v1/products", require("./routes/product.route"));
 //#endregion
 
 //#region Error Handling
