@@ -1,3 +1,4 @@
+/* eslint-disable node/no-unsupported-features/es-syntax */
 const slugify = require("slugify");
 const asyncHandler = require("express-async-handler");
 const Product = require("../models/ProductModel");
@@ -8,14 +9,21 @@ const AppError = require("../utils/appError");
 // @route GET /api/v1/Products
 // @access Public
 exports.getAllProducts = asyncHandler(async (req, res, next) => {
+  //! Filering
+  const queryObj = { ...req.query };
+  const excludeFilds = ["page", "sort", "limit", "fields"];
+  excludeFilds.forEach((item) => delete queryObj[item]);
+
+  //! Pagination
   const limit = +req.query.limit || 10;
   const page = +req.query.page || 1;
   const skip = (page - 1) * limit;
 
-  const products = await Product.find(
-    {},
-    { __v: 0, createdAt: 0, updatedAt: 0 }
-  )
+  const products = await Product.find(queryObj, {
+    __v: 0,
+    createdAt: 0,
+    updatedAt: 0,
+  })
     .populate("category", ["-__v"])
     .skip(skip)
     .limit(limit);
