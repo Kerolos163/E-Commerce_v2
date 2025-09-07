@@ -82,6 +82,28 @@ exports.createProductValidator = [
         throw new Error(`No subCategory found with id: ${value}`);
       }
       return true;
+    })
+    .custom(async (value, { req }) => {
+      const subCategories = await SubCategory.find({
+        category: req.body.category,
+      });
+
+      const subCategoriesIds = [];
+      subCategories.forEach((subCategory) => {
+        subCategoriesIds.push(subCategory._id.toString());
+      });
+
+      console.log(subCategoriesIds);
+      const checker = value.every((subCategory) =>
+        subCategoriesIds.includes(subCategory)
+      );
+
+      console.log(checker);
+      if (!checker) {
+        throw new Error(`SubCategory id must belong to the same category`);
+      }
+
+      return true;
     }),
 
   check("brand").optional().isMongoId().withMessage("Invalid brand id"),
