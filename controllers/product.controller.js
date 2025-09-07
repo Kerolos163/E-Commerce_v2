@@ -1,5 +1,5 @@
-/* eslint-disable node/no-unsupported-features/es-syntax */
 const slugify = require("slugify");
+const qs = require("qs");
 const asyncHandler = require("express-async-handler");
 const Product = require("../models/ProductModel");
 const httpStatus = require("../utils/http_status");
@@ -14,12 +14,17 @@ exports.getAllProducts = asyncHandler(async (req, res, next) => {
   const excludeFilds = ["page", "sort", "limit", "fields"];
   excludeFilds.forEach((item) => delete queryObj[item]);
 
+  //? Advanced filtering [gte, gt, lte, lt]
+  let queryStr = JSON.stringify(queryObj);
+  queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+  const filteringQuery = qs.parse(JSON.parse(queryStr));
+
   //! Pagination
   const limit = +req.query.limit || 10;
   const page = +req.query.page || 1;
   const skip = (page - 1) * limit;
 
-  const products = await Product.find(queryObj, {
+  const products = await Product.find(filteringQuery, {
     __v: 0,
     createdAt: 0,
     updatedAt: 0,
@@ -30,6 +35,7 @@ exports.getAllProducts = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     status: httpStatus.success,
+    count: products.length,
     page: +page,
     totalPages: Math.ceil((await Product.countDocuments()) / limit),
     products,
