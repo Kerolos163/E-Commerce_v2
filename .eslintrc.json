@@ -17,6 +17,7 @@
     "import/extensions": "off",
     "node/no-unsupported-features": "off",
     "class-methods-use-this": "off",
+    "node/no-unsupported-features/es-syntax": "off",
     "no-undef": "warn",
     "prefer-destructuring": ["warn", { "object": true, "array": false }],
     "no-unused-vars": ["warn", { "argsIgnorePattern": "req|res|next|val" }]

@@ -24,7 +24,7 @@ exports.getAllProducts = asyncHandler(async (req, res, next) => {
   const page = +req.query.page || 1;
   const skip = (page - 1) * limit;
 
-  const products = await Product.find(filteringQuery, {
+  let mongooseQuery = Product.find(filteringQuery, {
     __v: 0,
     createdAt: 0,
     updatedAt: 0,
@@ -32,6 +32,17 @@ exports.getAllProducts = asyncHandler(async (req, res, next) => {
     .populate("category", ["-__v"])
     .skip(skip)
     .limit(limit);
+
+  //? Sorting
+  if (req.query.sort) {
+    const sortBy = req.query.sort.split(",").join(" ");
+    console.log(sortBy);
+    mongooseQuery = mongooseQuery.sort(sortBy);
+  } else {
+    mongooseQuery = mongooseQuery.sort("-createdAt");
+  }
+
+  const products = await mongooseQuery;
 
   res.status(200).json({
     status: httpStatus.success,
