@@ -1,58 +1,30 @@
 const slugify = require("slugify");
-const qs = require("qs");
 const asyncHandler = require("express-async-handler");
 const Product = require("../models/ProductModel");
 const httpStatus = require("../utils/http_status");
 const AppError = require("../utils/appError");
+const ApiFeatures = require("../utils/apiFeatures");
 
 // @desc Get all Products
 // @route GET /api/v1/Products
 // @access Public
 exports.getAllProducts = asyncHandler(async (req, res, next) => {
-  //! Filering
-  const queryObj = { ...req.query };
-  const excludeFilds = ["page", "sort", "limit", "fields"];
-  excludeFilds.forEach((item) => delete queryObj[item]);
+  const apiFeatures = new ApiFeatures(Product.find(), req.query)
+    .filter()
+    .search()
+    .limitFields()
+    .sort()
+    .paginate();
 
-  //? Advanced filtering [gte, gt, lte, lt]
-  let queryStr = JSON.stringify(queryObj);
-  queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
-  const filteringQuery = qs.parse(JSON.parse(queryStr));
-
-  //! Pagination
-  const limit = +req.query.limit || 10;
-  const page = +req.query.page || 1;
-  const skip = (page - 1) * limit;
-
-  let mongooseQuery = Product.find(filteringQuery)
-    .populate("category", ["-__v"])
-    .skip(skip)
-    .limit(limit);
-
-  //? Sorting
-  if (req.query.sort) {
-    const sortBy = req.query.sort.split(",").join(" ");
-    console.log(sortBy);
-    mongooseQuery = mongooseQuery.sort(sortBy);
-  } else {
-    mongooseQuery = mongooseQuery.sort("-createdAt");
-  }
-
-  //* Field Limiting
-  if (req.query.fields) {
-    const fields = req.query.fields.split(",").join(" ");
-    mongooseQuery = mongooseQuery.select(fields);
-  } else {
-    mongooseQuery = mongooseQuery.select("-__v");
-  }
-
-  const products = await mongooseQuery;
+  const products = await apiFeatures.mongooseQuery.populate("category", [
+    "-__v",
+  ]);
 
   res.status(200).json({
     status: httpStatus.success,
     count: products.length,
-    page: +page,
-    totalPages: Math.ceil((await Product.countDocuments()) / limit),
+    // page: +page,
+    // totalPages: Math.ceil((await Product.countDocuments()) / limit),
     products,
   });
 });
