@@ -6,7 +6,6 @@ const AppError = require("../utils/appError");
 const ApiFeatures = require("../utils/apiFeatures");
 const factory = require("./handler.controller");
 
-
 // @desc Get all Products
 // @route GET /api/v1/Products
 // @access Public
@@ -75,31 +74,33 @@ exports.createProduct = asyncHandler(async (req, res, next) => {
 // @desc Update a product
 // @route PUT /api/v1/products/:id
 // @access Private
-exports.updateProduct = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  if (req.body.title) {
-    req.body.slug = slugify(req.body.title);
-  }
+exports.updateProduct = factory.updateOne(Product);
+//! Update Without Factory
+// exports.updateProduct = asyncHandler(async (req, res, next) => {
+//   const { id } = req.params;
+//   if (req.body.title) {
+//     req.body.slug = slugify(req.body.title);
+//   }
 
-  const product = await Product.findByIdAndUpdate(id, req.body, { new: true });
+//   const product = await Product.findByIdAndUpdate(id, req.body, { new: true });
 
-  if (!product) {
-    const err = new AppError("Product not found", 404);
-    return next(err);
-  }
+//   if (!product) {
+//     const err = new AppError("Product not found", 404);
+//     return next(err);
+//   }
 
-  res.status(200).json({
-    status: httpStatus.success,
-    message: "Product updated",
-    product: { id: product._id, name: product.name, slug: product.slug },
-  });
-});
+//   res.status(200).json({
+//     status: httpStatus.success,
+//     message: "Product updated",
+//     product: { id: product._id, name: product.name, slug: product.slug },
+//   });
+// });
 
 // @desc Delete a product
 // @route DELETE /api/v1/Products/:id
 // @access Private
-  exports.deleteProduct = factory.DeleteOne(Product);
-  //! Delete Without factory
+exports.deleteProduct = factory.DeleteOne(Product);
+//! Delete Without factory
 // exports.deleteProduct = asyncHandler(async (req, res, next) => {
 //   const { id } = req.params;
 //   const product = await Product.findByIdAndDelete(id);

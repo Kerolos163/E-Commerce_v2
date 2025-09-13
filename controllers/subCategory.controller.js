@@ -91,32 +91,34 @@ exports.createSubCategory = asyncHandler(async (req, res, next) => {
 // @desc Update subcategories
 // @route PUT /api/v1/subcategories/:id
 // @access Private
-exports.updateSubCategory = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const { name, category } = req.body;
-  const slug = slugify(name);
+exports.updateSubCategory = factory.updateOne(SubCategory);
+//! Update Without Factory
+// exports.updateSubCategory = asyncHandler(async (req, res, next) => {
+//   const { id } = req.params;
+//   const { name, category } = req.body;
+//   const slug = slugify(name);
 
-  const result = await SubCategory.findByIdAndUpdate(
-    id,
-    { name, slug, category },
-    { new: true }
-  );
-  if (!result) {
-    const err = new AppError("SubCategory not found", 404);
-    return next(err);
-  }
+//   const result = await SubCategory.findByIdAndUpdate(
+//     id,
+//     { name, slug, category },
+//     { new: true }
+//   );
+//   if (!result) {
+//     const err = new AppError("SubCategory not found", 404);
+//     return next(err);
+//   }
 
-  res.status(200).json({
-    status: httpStatus.success,
-    message: "SubCategory updated",
-    subCategory: {
-      id: result._id,
-      name: result.name,
-      slug: result.slug,
-      category: result.category,
-    },
-  });
-});
+//   res.status(200).json({
+//     status: httpStatus.success,
+//     message: "SubCategory updated",
+//     subCategory: {
+//       id: result._id,
+//       name: result.name,
+//       slug: result.slug,
+//       category: result.category,
+//     },
+//   });
+// });
 
 // @desc Delete subcategories
 // @route DELETE /api/v1/subcategories/:id

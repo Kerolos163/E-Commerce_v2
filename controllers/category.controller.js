@@ -72,28 +72,30 @@ exports.createCategory = asyncHandler(async (req, res, next) => {
 // @desc Update a category
 // @route PUT /api/v1/categories/:id
 // @access Private
-exports.updateCategory = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const { name } = req.body;
-  const slug = slugify(name);
+exports.updateCategory = factory.updateOne(Category);
+//! Update without factory
+// exports.updateCategory = asyncHandler(async (req, res, next) => {
+//   const { id } = req.params;
+//   const { name } = req.body;
+//   const slug = slugify(name);
 
-  const category = await Category.findByIdAndUpdate(
-    id,
-    { name, slug },
-    { new: true }
-  );
+//   const category = await Category.findByIdAndUpdate(
+//     id,
+//     { name, slug },
+//     { new: true }
+//   );
 
-  if (!category) {
-    const err = new AppError("Category not found", 404);
-    return next(err);
-  }
+//   if (!category) {
+//     const err = new AppError("Category not found", 404);
+//     return next(err);
+//   }
 
-  res.status(200).json({
-    status: httpStatus.success,
-    message: "Category updated",
-    category: { id: category._id, name: category.name, slug: category.slug },
-  });
-});
+//   res.status(200).json({
+//     status: httpStatus.success,
+//     message: "Category updated",
+//     category: { id: category._id, name: category.name, slug: category.slug },
+//   });
+// });
 
 // @desc Delete a category
 // @route DELETE /api/v1/categories/:id

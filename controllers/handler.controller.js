@@ -24,3 +24,20 @@ exports.DeleteOne = (model) =>
       },
     });
   });
+
+exports.updateOne = (model) =>
+  asyncHandler(async (req, res, next) => {
+    const { id } = req.params;
+    const decument = await model.findByIdAndUpdate(id, req.body, { new: true });
+
+    if (!decument) {
+      const err = new AppError(`Decument not found with id ${id}`, 404);
+      return next(err);
+    }
+
+    res.status(200).json({
+      status: httpStatus.success,
+      message: "Decument updated",
+      Brand: { id: decument._id, name: decument.name, slug: decument.slug },
+    });
+  });
