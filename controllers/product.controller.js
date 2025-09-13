@@ -11,7 +11,7 @@ const ApiFeatures = require("../utils/apiFeatures");
 exports.getAllProducts = asyncHandler(async (req, res, next) => {
   const apiFeatures = new ApiFeatures(Product.find(), req.query)
     .filter()
-    .search()
+    .search("Product")
     .limitFields()
     .sort()
     .paginate(await Product.countDocuments());

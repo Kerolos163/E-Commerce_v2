@@ -3,26 +3,30 @@ const asyncHandler = require("express-async-handler");
 const Category = require("../models/CategoryModel");
 const httpStatus = require("../utils/http_status");
 const AppError = require("../utils/appError");
+const ApiFeatures = require("../utils/apiFeatures");
 
 // @desc Get all categories
 // @route GET /api/v1/categories
 // @access Public
 exports.getAllCategories = asyncHandler(async (req, res, next) => {
-  const limit = +req.query.limit || 10;
-  const page = +req.query.page || 1;
-  const skip = (page - 1) * limit;
-
-  const categories = await Category.find(
-    {},
-    { __v: 0, createdAt: 0, updatedAt: 0 }
-  )
-    .skip(skip)
-    .limit(limit);
+  const apiFeatures = new ApiFeatures(Category.find(), req.query)
+    .filter()
+    .search()
+    .limitFields()
+    .sort()
+    .paginate(await Category.countDocuments());
+  const categories = await apiFeatures.mongooseQuery;
 
   res.status(200).json({
     status: httpStatus.success,
-    page: +page,
-    totalPages: Math.ceil((await Category.countDocuments()) / limit),
+    count: categories.length,
+    pagination: {
+      limit: apiFeatures.paginationResult.limit,
+      currentPage: apiFeatures.paginationResult.page,
+      previousPage: apiFeatures.paginationResult.Previous,
+      nextPage: apiFeatures.paginationResult.nextPage,
+      totalPages: apiFeatures.paginationResult.totalPages,
+    },
     categories,
   });
 });

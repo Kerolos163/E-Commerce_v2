@@ -3,6 +3,7 @@ const asyncHandler = require("express-async-handler");
 const SubCategory = require("../models/SubCategoryModel");
 const httpStatus = require("../utils/http_status");
 const AppError = require("../utils/appError");
+const ApiFeatures = require("../utils/apiFeatures");
 
 // @route GET /api/v1/categories/:categoryId/subcategories
 exports.CreateFilter = (req, res, next) => {
@@ -16,23 +17,26 @@ exports.CreateFilter = (req, res, next) => {
 // @route GET /api/v1/subcategories
 // @access Public
 exports.getAllSubCategory = asyncHandler(async (req, res, next) => {
-  const page = +req.query.page || 1;
-  const limit = +req.query.limit || 10;
-  const skip = (page - 1) * limit;
-  console.log(req.params.categoryId);
+  const apiFeatures = new ApiFeatures(SubCategory.find(), req.query)
+    .filter()
+    .search()
+    .limitFields()
+    .sort()
+    .paginate(await SubCategory.countDocuments());
+  const subCategory = await apiFeatures.mongooseQuery.populate("category", [
+    "-__v",
+  ]);
 
-  const subCategory = await SubCategory.find(req.filter, {
-    __v: 0,
-    createdAt: 0,
-    updatedAt: 0,
-  })
-    .populate("category", ["-__v"])
-    .skip(skip)
-    .limit(limit);
   res.status(200).json({
     status: httpStatus.success,
-    page: +page,
-    totalPages: Math.ceil((await SubCategory.countDocuments()) / limit),
+    count: subCategory.length,
+    pagination: {
+      limit: apiFeatures.paginationResult.limit,
+      currentPage: apiFeatures.paginationResult.page,
+      previousPage: apiFeatures.paginationResult.Previous,
+      nextPage: apiFeatures.paginationResult.nextPage,
+      totalPages: apiFeatures.paginationResult.totalPages,
+    },
     subCategory,
   });
 });
