@@ -4,6 +4,7 @@ const Brand = require("../models/BrandModel");
 const httpStatus = require("../utils/http_status");
 const AppError = require("../utils/appError");
 const ApiFeatures = require("../utils/apiFeatures");
+const factory = require("./handler.controller");
 
 // @desc Get all Brands
 // @route GET /api/v1/Brands
@@ -97,17 +98,20 @@ exports.updateBrand = asyncHandler(async (req, res, next) => {
 // @desc Delete a Brand
 // @route DELETE /api/v1/brands/:id
 // @access Private
-exports.deleteBrand = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const brand = await Brand.findByIdAndDelete(id);
-  if (!brand) {
-    const err = new AppError("Brand not found", 404);
-    return next(err);
-  }
 
-  res.status(204).json({
-    status: httpStatus.success,
-    message: "Brand deleted",
-    Brand: { id: brand._id, name: brand.name, slug: brand.slug },
-  });
-});
+exports.deleteBrand = factory.DeleteOne(Brand);
+//! Delete without factory
+// exports.deleteBrand = asyncHandler(async (req, res, next) => {
+//   const { id } = req.params;
+//   const brand = await Brand.findByIdAndDelete(id);
+//   if (!brand) {
+//     const err = new AppError("Brand not found", 404);
+//     return next(err);
+//   }
+
+//   res.status(204).json({
+//     status: httpStatus.success,
+//     message: "Brand deleted",
+//     Brand: { id: brand._id, name: brand.name, slug: brand.slug },
+//   });
+// });

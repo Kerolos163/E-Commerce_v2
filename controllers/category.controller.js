@@ -4,6 +4,7 @@ const Category = require("../models/CategoryModel");
 const httpStatus = require("../utils/http_status");
 const AppError = require("../utils/appError");
 const ApiFeatures = require("../utils/apiFeatures");
+const factory = require("./handler.controller");
 
 // @desc Get all categories
 // @route GET /api/v1/categories
@@ -97,17 +98,19 @@ exports.updateCategory = asyncHandler(async (req, res, next) => {
 // @desc Delete a category
 // @route DELETE /api/v1/categories/:id
 // @access Private
-exports.deleteCategory = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const category = await Category.findByIdAndDelete(id);
-  if (!category) {
-    const err = new AppError("Category not found", 404);
-    return next(err);
-  }
+exports.deleteCategory = factory.DeleteOne(Category);
+//! Delete without factory
+// exports.deleteCategory = asyncHandler(async (req, res, next) => {
+//   const { id } = req.params;
+//   const category = await Category.findByIdAndDelete(id);
+//   if (!category) {
+//     const err = new AppError("Category not found", 404);
+//     return next(err);
+//   }
 
-  res.status(204).json({
-    status: httpStatus.success,
-    message: "Category deleted",
-    category: { id: category._id, name: category.name, slug: category.slug },
-  });
-});
+//   res.status(204).json({
+//     status: httpStatus.success,
+//     message: "Category deleted",
+//     category: { id: category._id, name: category.name, slug: category.slug },
+//   });
+// });

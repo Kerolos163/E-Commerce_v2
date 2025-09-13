@@ -4,6 +4,8 @@ const Product = require("../models/ProductModel");
 const httpStatus = require("../utils/http_status");
 const AppError = require("../utils/appError");
 const ApiFeatures = require("../utils/apiFeatures");
+const factory = require("./handler.controller");
+
 
 // @desc Get all Products
 // @route GET /api/v1/Products
@@ -96,17 +98,19 @@ exports.updateProduct = asyncHandler(async (req, res, next) => {
 // @desc Delete a product
 // @route DELETE /api/v1/Products/:id
 // @access Private
-exports.deleteProduct = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const product = await Product.findByIdAndDelete(id);
-  if (!product) {
-    const err = new AppError("Product not found", 404);
-    return next(err);
-  }
+  exports.deleteProduct = factory.DeleteOne(Product);
+  //! Delete Without factory
+// exports.deleteProduct = asyncHandler(async (req, res, next) => {
+//   const { id } = req.params;
+//   const product = await Product.findByIdAndDelete(id);
+//   if (!product) {
+//     const err = new AppError("Product not found", 404);
+//     return next(err);
+//   }
 
-  res.status(204).json({
-    status: httpStatus.success,
-    message: "Category deleted",
-    product: { id: product._id, name: product.name, slug: product.slug },
-  });
-});
+//   res.status(204).json({
+//     status: httpStatus.success,
+//     message: "Category deleted",
+//     product: { id: product._id, name: product.name, slug: product.slug },
+//   });
+// });

@@ -4,6 +4,7 @@ const SubCategory = require("../models/SubCategoryModel");
 const httpStatus = require("../utils/http_status");
 const AppError = require("../utils/appError");
 const ApiFeatures = require("../utils/apiFeatures");
+const factory = require("./handler.controller");
 
 // @route GET /api/v1/categories/:categoryId/subcategories
 exports.CreateFilter = (req, res, next) => {
@@ -120,23 +121,25 @@ exports.updateSubCategory = asyncHandler(async (req, res, next) => {
 // @desc Delete subcategories
 // @route DELETE /api/v1/subcategories/:id
 // @access Private
-exports.deleteSubCategory = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const result = await SubCategory.findByIdAndDelete(id);
+exports.deleteSubCategory = factory.DeleteOne(SubCategory);
+//! Delete Without Factory
+// exports.deleteSubCategory = asyncHandler(async (req, res, next) => {
+//   const { id } = req.params;
+//   const result = await SubCategory.findByIdAndDelete(id);
 
-  if (!result) {
-    const err = new AppError("SubCategory not found", 404);
-    return next(err);
-  }
+//   if (!result) {
+//     const err = new AppError("SubCategory not found", 404);
+//     return next(err);
+//   }
 
-  res.status(200).json({
-    status: httpStatus.success,
-    message: "SubCategory deleted",
-    subCategory: {
-      id: result._id,
-      name: result.name,
-      slug: result.slug,
-      category: result.category,
-    },
-  });
-});
+//   res.status(200).json({
+//     status: httpStatus.success,
+//     message: "SubCategory deleted",
+//     subCategory: {
+//       id: result._id,
+//       name: result.name,
+//       slug: result.slug,
+//       category: result.category,
+//     },
+//   });
+// });
