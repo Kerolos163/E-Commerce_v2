@@ -14,7 +14,7 @@ exports.getAllProducts = asyncHandler(async (req, res, next) => {
     .search()
     .limitFields()
     .sort()
-    .paginate();
+    .paginate(await Product.countDocuments());
 
   const products = await apiFeatures.mongooseQuery.populate("category", [
     "-__v",
@@ -23,8 +23,13 @@ exports.getAllProducts = asyncHandler(async (req, res, next) => {
   res.status(200).json({
     status: httpStatus.success,
     count: products.length,
-    // page: +page,
-    // totalPages: Math.ceil((await Product.countDocuments()) / limit),
+    pagination: {
+      limit: apiFeatures.paginationResult.limit,
+      currentPage: apiFeatures.paginationResult.page,
+      previousPage: apiFeatures.paginationResult.Previous,
+      nextPage: apiFeatures.paginationResult.nextPage,
+      totalPages: apiFeatures.paginationResult.totalPages,
+    },
     products,
   });
 });
