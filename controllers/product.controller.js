@@ -4,7 +4,7 @@ const factory = require("./handler.controller");
 // @desc Get all Products
 // @route GET /api/v1/Products
 // @access Public
-exports.getAllProducts = factory.getAll(Product, "category","Product");
+exports.getAllProducts = factory.getAll(Product,"Product");
 //! Get Without factory
 // exports.getAllProducts = asyncHandler(async (req, res, next) => {
 //   const apiFeatures = new ApiFeatures(Product.find(), req.query)

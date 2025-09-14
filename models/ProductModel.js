@@ -70,5 +70,13 @@ const productSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+//? Mongoose Query middleware
+productSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "category",
+    select: "-__v",
+  });
+  next();
+});
 
 module.exports = mongoose.model("Product", productSchema);

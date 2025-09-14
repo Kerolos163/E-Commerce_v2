@@ -12,7 +12,7 @@ exports.CreateFilter = (req, res, next) => {
 // @desc Get all subcategories
 // @route GET /api/v1/subcategories
 // @access Public
-exports.getAllSubCategory = factory.getAll(SubCategory, "category");
+exports.getAllSubCategory = factory.getAll(SubCategory);
 //! Get Without Factory
 // exports.getAllSubCategory = asyncHandler(async (req, res, next) => {
 //   const apiFeatures = new ApiFeatures(SubCategory.find(), req.query)

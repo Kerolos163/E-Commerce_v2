@@ -78,9 +78,8 @@ exports.getOne = (model, populateOptions) =>
     });
   });
 
-exports.getAll = (model, populateOptions, modelName) =>
+exports.getAll = (model, modelName) =>
   asyncHandler(async (req, res, next) => {
-    let filter = {};
     const apiFeatures = new ApiFeatures(model.find(), req.query)
       .filter()
       .search(modelName)
@@ -88,14 +87,7 @@ exports.getAll = (model, populateOptions, modelName) =>
       .sort()
       .paginate(await model.countDocuments());
 
-    let documents;
-    if (populateOptions) {
-      documents = await apiFeatures.mongooseQuery.populate(populateOptions, [
-        "-__v",
-      ]);
-    } else {
-      documents = await apiFeatures.mongooseQuery;
-    }
+    const documents = await apiFeatures.mongooseQuery;
 
     res.status(200).json({
       status: httpStatus.success,
