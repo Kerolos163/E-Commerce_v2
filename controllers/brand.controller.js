@@ -1,4 +1,3 @@
-const slugify = require("slugify");
 const asyncHandler = require("express-async-handler");
 const Brand = require("../models/BrandModel");
 const httpStatus = require("../utils/http_status");
@@ -56,18 +55,20 @@ exports.getBrandById = asyncHandler(async (req, res, next) => {
 // @desc Create a new brand
 // @route POST /api/v1/brands
 // @access Private
-exports.createBrand = asyncHandler(async (req, res, next) => {
-  const { name } = req.body;
-  const slug = slugify(name);
+exports.createBrand = factory.createOne(Brand);
+//! Create without factory
+// exports.createBrand = asyncHandler(async (req, res, next) => {
+//   const { name } = req.body;
+//   const slug = slugify(name);
 
-  const brand = new Brand({ name, slug });
-  const result = await brand.save();
-  res.status(201).json({
-    status: httpStatus.success,
-    message: "Brand created",
-    Brand: { id: result._id, name: result.name, slug: result.slug },
-  });
-});
+//   const brand = new Brand({ name, slug });
+//   const result = await brand.save();
+//   res.status(201).json({
+//     status: httpStatus.success,
+//     message: "Brand created",
+//     Brand: { id: result._id, name: result.name, slug: result.slug },
+//   });
+// });
 
 // @desc Update a Brand
 // @route PUT /api/v1/brands/:id

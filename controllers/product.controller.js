@@ -1,4 +1,3 @@
-const slugify = require("slugify");
 const asyncHandler = require("express-async-handler");
 const Product = require("../models/ProductModel");
 const httpStatus = require("../utils/http_status");
@@ -59,17 +58,19 @@ exports.getProductById = asyncHandler(async (req, res, next) => {
 // @desc Create a new product
 // @route POST /api/v1/products
 // @access Private
-exports.createProduct = asyncHandler(async (req, res, next) => {
-  req.body.slug = slugify(req.body.title);
+exports.createProduct = factory.createOne(Product);
+//! Create without factory
+// exports.createProduct = asyncHandler(async (req, res, next) => {
+//   req.body.slug = slugify(req.body.title);
 
-  const product = new Product(req.body);
-  const result = await product.save();
-  res.status(201).json({
-    status: httpStatus.success,
-    message: "Product created",
-    product: { id: result._id, name: result.name, slug: result.slug },
-  });
-});
+//   const product = new Product(req.body);
+//   const result = await product.save();
+//   res.status(201).json({
+//     status: httpStatus.success,
+//     message: "Product created",
+//     product: { id: result._id, name: result.name, slug: result.slug },
+//   });
+// });
 
 // @desc Update a product
 // @route PUT /api/v1/products/:id

@@ -1,4 +1,3 @@
-const slugify = require("slugify");
 const asyncHandler = require("express-async-handler");
 const Category = require("../models/CategoryModel");
 const httpStatus = require("../utils/http_status");
@@ -56,18 +55,20 @@ exports.getCategoryById = asyncHandler(async (req, res, next) => {
 // @desc Create a new category
 // @route POST /api/v1/categories
 // @access Private
-exports.createCategory = asyncHandler(async (req, res, next) => {
-  const { name } = req.body;
-  const slug = slugify(name);
+exports.createCategory = factory.createOne(Category);
+//! Create without factory
+// exports.createCategory = asyncHandler(async (req, res, next) => {
+//   const { name } = req.body;
+//   const slug = slugify(name);
 
-  const category = new Category({ name, slug });
-  const result = await category.save();
-  res.status(201).json({
-    status: httpStatus.success,
-    message: "Category created",
-    category: { id: result._id, name: result.name, slug: result.slug },
-  });
-});
+//   const category = new Category({ name, slug });
+//   const result = await category.save();
+//   res.status(201).json({
+//     status: httpStatus.success,
+//     message: "Category created",
+//     category: { id: result._id, name: result.name, slug: result.slug },
+//   });
+// });
 
 // @desc Update a category
 // @route PUT /api/v1/categories/:id

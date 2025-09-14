@@ -9,7 +9,11 @@ exports.createSubCategoryValidator = [
     .isLength({ min: 2 })
     .withMessage("Name must be at least 2 characters")
     .isLength({ max: 32 })
-    .withMessage("Name must be at most 32 characters"),
+    .withMessage("Name must be at most 32 characters")
+    .custom((val, { req }) => {
+      req.body.slug = slugify(val);
+      return true;
+    }),
 
   check("category")
     .notEmpty()
@@ -36,7 +40,7 @@ exports.updateSubCategoryValidator = [
     .withMessage("Invalid subCategory id"),
 
   check("name")
-  .optional()
+    .optional()
     .custom((val, { req }) => {
       req.body.slug = slugify(val);
       return true;

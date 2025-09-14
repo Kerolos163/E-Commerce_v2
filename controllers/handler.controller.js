@@ -41,3 +41,13 @@ exports.updateOne = (model) =>
       Brand: { id: decument._id, name: decument.name, slug: decument.slug },
     });
   });
+
+exports.createOne = (model) =>
+  asyncHandler(async (req, res, next) => {
+    const result = await model.create(req.body);
+    res.status(201).json({
+      status: httpStatus.success,
+      message: "Brand created",
+      document: { id: result._id, name: result.name, slug: result.slug },
+    });
+  });
