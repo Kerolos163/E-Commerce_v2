@@ -1,56 +1,56 @@
-const asyncHandler = require("express-async-handler");
 const Brand = require("../models/BrandModel");
-const httpStatus = require("../utils/http_status");
-const AppError = require("../utils/appError");
-const ApiFeatures = require("../utils/apiFeatures");
 const factory = require("./handler.controller");
 
 // @desc Get all Brands
 // @route GET /api/v1/Brands
 // @access Public
-exports.getAllBrands = asyncHandler(async (req, res, next) => {
-  const apiFeatures = new ApiFeatures(Brand.find(), req.query)
-    .filter()
-    .search()
-    .limitFields()
-    .sort()
-    .paginate(await Brand.countDocuments());
-  const brands = await apiFeatures.mongooseQuery;
+exports.getAllBrands = factory.getAll(Brand);
+//! Get without factory
+// exports.getAllBrands = asyncHandler(async (req, res, next) => {
+//   const apiFeatures = new ApiFeatures(Brand.find(), req.query)
+//     .filter()
+//     .search()
+//     .limitFields()
+//     .sort()
+//     .paginate(await Brand.countDocuments());
+//   const brands = await apiFeatures.mongooseQuery;
 
-  res.status(200).json({
-    status: httpStatus.success,
-    count: brands.length,
-    pagination: {
-      limit: apiFeatures.paginationResult.limit,
-      currentPage: apiFeatures.paginationResult.page,
-      previousPage: apiFeatures.paginationResult.Previous,
-      nextPage: apiFeatures.paginationResult.nextPage,
-      totalPages: apiFeatures.paginationResult.totalPages,
-    },
-    brands,
-  });
-});
+//   res.status(200).json({
+//     status: httpStatus.success,
+//     count: brands.length,
+//     pagination: {
+//       limit: apiFeatures.paginationResult.limit,
+//       currentPage: apiFeatures.paginationResult.page,
+//       previousPage: apiFeatures.paginationResult.Previous,
+//       nextPage: apiFeatures.paginationResult.nextPage,
+//       totalPages: apiFeatures.paginationResult.totalPages,
+//     },
+//     brands,
+//   });
+// });
 
 // @desc Get brands by ID
 // @route GET /api/v1/brands/:id
 // @access Public
-exports.getBrandById = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const brand = await Brand.findById(id, {
-    __v: 0,
-    createdAt: 0,
-    updatedAt: 0,
-  });
-  if (!brand) {
-    const err = new AppError("Brand not found", 404);
-    return next(err);
-  }
+exports.getBrandById = factory.getOne(Brand);
+//! Get without factory
+// exports.getBrandById = asyncHandler(async (req, res, next) => {
+//   const { id } = req.params;
+//   const brand = await Brand.findById(id, {
+//     __v: 0,
+//     createdAt: 0,
+//     updatedAt: 0,
+//   });
+//   if (!brand) {
+//     const err = new AppError("Brand not found", 404);
+//     return next(err);
+//   }
 
-  res.status(200).json({
-    status: httpStatus.success,
-    brand,
-  });
-});
+//   res.status(200).json({
+//     status: httpStatus.success,
+//     brand,
+//   });
+// });
 
 // @desc Create a new brand
 // @route POST /api/v1/brands

@@ -1,56 +1,56 @@
-const asyncHandler = require("express-async-handler");
 const Category = require("../models/CategoryModel");
-const httpStatus = require("../utils/http_status");
-const AppError = require("../utils/appError");
-const ApiFeatures = require("../utils/apiFeatures");
 const factory = require("./handler.controller");
 
 // @desc Get all categories
 // @route GET /api/v1/categories
 // @access Public
-exports.getAllCategories = asyncHandler(async (req, res, next) => {
-  const apiFeatures = new ApiFeatures(Category.find(), req.query)
-    .filter()
-    .search()
-    .limitFields()
-    .sort()
-    .paginate(await Category.countDocuments());
-  const categories = await apiFeatures.mongooseQuery;
+exports.getAllCategories = factory.getAll(Category);
+//! Get without factory
+// exports.getAllCategories = asyncHandler(async (req, res, next) => {
+//   const apiFeatures = new ApiFeatures(Category.find(), req.query)
+//     .filter()
+//     .search()
+//     .limitFields()
+//     .sort()
+//     .paginate(await Category.countDocuments());
+//   const categories = await apiFeatures.mongooseQuery;
 
-  res.status(200).json({
-    status: httpStatus.success,
-    count: categories.length,
-    pagination: {
-      limit: apiFeatures.paginationResult.limit,
-      currentPage: apiFeatures.paginationResult.page,
-      previousPage: apiFeatures.paginationResult.Previous,
-      nextPage: apiFeatures.paginationResult.nextPage,
-      totalPages: apiFeatures.paginationResult.totalPages,
-    },
-    categories,
-  });
-});
+//   res.status(200).json({
+//     status: httpStatus.success,
+//     count: categories.length,
+//     pagination: {
+//       limit: apiFeatures.paginationResult.limit,
+//       currentPage: apiFeatures.paginationResult.page,
+//       previousPage: apiFeatures.paginationResult.Previous,
+//       nextPage: apiFeatures.paginationResult.nextPage,
+//       totalPages: apiFeatures.paginationResult.totalPages,
+//     },
+//     categories,
+//   });
+// });
 
 // @desc Get category by ID
 // @route GET /api/v1/categories/:id
 // @access Public
-exports.getCategoryById = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const category = await Category.findById(id, {
-    __v: 0,
-    createdAt: 0,
-    updatedAt: 0,
-  });
-  if (!category) {
-    const err = new AppError("Category not found", 404);
-    return next(err);
-  }
+exports.getCategoryById = factory.getOne(Category);
+//! Get without factory
+// exports.getCategoryById = asyncHandler(async (req, res, next) => {
+//   const { id } = req.params;
+//   const category = await Category.findById(id, {
+//     __v: 0,
+//     createdAt: 0,
+//     updatedAt: 0,
+//   });
+//   if (!category) {
+//     const err = new AppError("Category not found", 404);
+//     return next(err);
+//   }
 
-  res.status(200).json({
-    status: httpStatus.success,
-    category,
-  });
-});
+//   res.status(200).json({
+//     status: httpStatus.success,
+//     category,
+//   });
+// });
 
 // @desc Create a new category
 // @route POST /api/v1/categories

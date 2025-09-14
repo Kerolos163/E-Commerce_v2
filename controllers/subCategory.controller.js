@@ -1,8 +1,4 @@
-const asyncHandler = require("express-async-handler");
 const SubCategory = require("../models/SubCategoryModel");
-const httpStatus = require("../utils/http_status");
-const AppError = require("../utils/appError");
-const ApiFeatures = require("../utils/apiFeatures");
 const factory = require("./handler.controller");
 
 // @route GET /api/v1/categories/:categoryId/subcategories
@@ -16,50 +12,54 @@ exports.CreateFilter = (req, res, next) => {
 // @desc Get all subcategories
 // @route GET /api/v1/subcategories
 // @access Public
-exports.getAllSubCategory = asyncHandler(async (req, res, next) => {
-  const apiFeatures = new ApiFeatures(SubCategory.find(), req.query)
-    .filter()
-    .search()
-    .limitFields()
-    .sort()
-    .paginate(await SubCategory.countDocuments());
-  const subCategory = await apiFeatures.mongooseQuery.populate("category", [
-    "-__v",
-  ]);
+exports.getAllSubCategory = factory.getAll(SubCategory, "category");
+//! Get Without Factory
+// exports.getAllSubCategory = asyncHandler(async (req, res, next) => {
+//   const apiFeatures = new ApiFeatures(SubCategory.find(), req.query)
+//     .filter()
+//     .search()
+//     .limitFields()
+//     .sort()
+//     .paginate(await SubCategory.countDocuments());
+//   const subCategory = await apiFeatures.mongooseQuery.populate("category", [
+//     "-__v",
+//   ]);
 
-  res.status(200).json({
-    status: httpStatus.success,
-    count: subCategory.length,
-    pagination: {
-      limit: apiFeatures.paginationResult.limit,
-      currentPage: apiFeatures.paginationResult.page,
-      previousPage: apiFeatures.paginationResult.Previous,
-      nextPage: apiFeatures.paginationResult.nextPage,
-      totalPages: apiFeatures.paginationResult.totalPages,
-    },
-    subCategory,
-  });
-});
+//   res.status(200).json({
+//     status: httpStatus.success,
+//     count: subCategory.length,
+//     pagination: {
+//       limit: apiFeatures.paginationResult.limit,
+//       currentPage: apiFeatures.paginationResult.page,
+//       previousPage: apiFeatures.paginationResult.Previous,
+//       nextPage: apiFeatures.paginationResult.nextPage,
+//       totalPages: apiFeatures.paginationResult.totalPages,
+//     },
+//     subCategory,
+//   });
+// });
 
 // @desc Get single subcategories
 // @route GET /api/v1/subcategories/:id
 // @access Public
-exports.getSubCategoryById = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const subCategory = await SubCategory.findById(id, {
-    __v: 0,
-    createdAt: 0,
-    updatedAt: 0,
-  }).populate("category", ["-__v"]);
-  if (!subCategory) {
-    const err = new AppError("SubCategory not found", 404);
-    return next(err);
-  }
-  res.status(200).json({
-    status: httpStatus.success,
-    subCategory,
-  });
-});
+exports.getSubCategoryById = factory.getOne(SubCategory, "category");
+//! Get Without Factory
+// exports.getSubCategoryById = asyncHandler(async (req, res, next) => {
+//   const { id } = req.params;
+//   const subCategory = await SubCategory.findById(id, {
+//     __v: 0,
+//     createdAt: 0,
+//     updatedAt: 0,
+//   }).populate("category", ["-__v"]);
+//   if (!subCategory) {
+//     const err = new AppError("SubCategory not found", 404);
+//     return next(err);
+//   }
+//   res.status(200).json({
+//     status: httpStatus.success,
+//     subCategory,
+//   });
+// });
 
 exports.setCategoryIdToBody = (req, res, next) => {
   if (!req.body.category) req.body.category = req.params.categoryId;

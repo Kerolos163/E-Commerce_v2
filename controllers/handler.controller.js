@@ -51,3 +51,62 @@ exports.createOne = (model) =>
       document: { id: result._id, name: result.name, slug: result.slug },
     });
   });
+
+exports.getOne = (model, populateOptions) =>
+  asyncHandler(async (req, res, next) => {
+    const { id } = req.params;
+    const mongooseQuery = model.findById(id, {
+      __v: 0,
+      createdAt: 0,
+      updatedAt: 0,
+    });
+    let document;
+    if (populateOptions) {
+      document = await mongooseQuery.populate(populateOptions, ["-__v"]);
+    } else {
+      document = await mongooseQuery;
+    }
+
+    if (!document) {
+      const err = new AppError(`No document for this id ${id}`, 404);
+      return next(err);
+    }
+
+    res.status(200).json({
+      status: httpStatus.success,
+      document,
+    });
+  });
+
+exports.getAll = (model, populateOptions, modelName) =>
+  asyncHandler(async (req, res, next) => {
+    let filter = {};
+    const apiFeatures = new ApiFeatures(model.find(), req.query)
+      .filter()
+      .search(modelName)
+      .limitFields()
+      .sort()
+      .paginate(await model.countDocuments());
+
+    let documents;
+    if (populateOptions) {
+      documents = await apiFeatures.mongooseQuery.populate(populateOptions, [
+        "-__v",
+      ]);
+    } else {
+      documents = await apiFeatures.mongooseQuery;
+    }
+
+    res.status(200).json({
+      status: httpStatus.success,
+      count: documents.length,
+      pagination: {
+        limit: apiFeatures.paginationResult.limit,
+        currentPage: apiFeatures.paginationResult.page,
+        previousPage: apiFeatures.paginationResult.Previous,
+        nextPage: apiFeatures.paginationResult.nextPage,
+        totalPages: apiFeatures.paginationResult.totalPages,
+      },
+      documents,
+    });
+  });

@@ -19,6 +19,7 @@
     "class-methods-use-this": "off",
     "node/no-unsupported-features/es-syntax": "off",
     "no-undef": "warn",
+    "eslint-disable-next-line prefer-destructuring": "off",
     "prefer-destructuring": ["warn", { "object": true, "array": false }],
     "no-unused-vars": ["warn", { "argsIgnorePattern": "req|res|next|val" }]
   }

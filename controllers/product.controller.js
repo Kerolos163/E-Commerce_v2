@@ -1,59 +1,59 @@
-const asyncHandler = require("express-async-handler");
 const Product = require("../models/ProductModel");
-const httpStatus = require("../utils/http_status");
-const AppError = require("../utils/appError");
-const ApiFeatures = require("../utils/apiFeatures");
 const factory = require("./handler.controller");
 
 // @desc Get all Products
 // @route GET /api/v1/Products
 // @access Public
-exports.getAllProducts = asyncHandler(async (req, res, next) => {
-  const apiFeatures = new ApiFeatures(Product.find(), req.query)
-    .filter()
-    .search("Product")
-    .limitFields()
-    .sort()
-    .paginate(await Product.countDocuments());
+exports.getAllProducts = factory.getAll(Product, "category","Product");
+//! Get Without factory
+// exports.getAllProducts = asyncHandler(async (req, res, next) => {
+//   const apiFeatures = new ApiFeatures(Product.find(), req.query)
+//     .filter()
+//     .search("Product")
+//     .limitFields()
+//     .sort()
+//     .paginate(await Product.countDocuments());
 
-  const products = await apiFeatures.mongooseQuery.populate("category", [
-    "-__v",
-  ]);
+//   const products = await apiFeatures.mongooseQuery.populate("category", [
+//     "-__v",
+//   ]);
 
-  res.status(200).json({
-    status: httpStatus.success,
-    count: products.length,
-    pagination: {
-      limit: apiFeatures.paginationResult.limit,
-      currentPage: apiFeatures.paginationResult.page,
-      previousPage: apiFeatures.paginationResult.Previous,
-      nextPage: apiFeatures.paginationResult.nextPage,
-      totalPages: apiFeatures.paginationResult.totalPages,
-    },
-    products,
-  });
-});
+//   res.status(200).json({
+//     status: httpStatus.success,
+//     count: products.length,
+//     pagination: {
+//       limit: apiFeatures.paginationResult.limit,
+//       currentPage: apiFeatures.paginationResult.page,
+//       previousPage: apiFeatures.paginationResult.Previous,
+//       nextPage: apiFeatures.paginationResult.nextPage,
+//       totalPages: apiFeatures.paginationResult.totalPages,
+//     },
+//     products,
+//   });
+// });
 
 // @desc Get product by ID
 // @route GET /api/v1/products/:id
 // @access Public
-exports.getProductById = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const product = await Product.findById(id, {
-    __v: 0,
-    createdAt: 0,
-    updatedAt: 0,
-  }).populate("category", ["-__v"]);
-  if (!product) {
-    const err = new AppError("Category not found", 404);
-    return next(err);
-  }
+exports.getProductById = factory.getOne(Product, "category");
+//! Get Without Factory
+// exports.getProductById = asyncHandler(async (req, res, next) => {
+//   const { id } = req.params;
+//   const product = await Product.findById(id, {
+//     __v: 0,
+//     createdAt: 0,
+//     updatedAt: 0,
+//   }).populate("category", ["-__v"]);
+//   if (!product) {
+//     const err = new AppError("Category not found", 404);
+//     return next(err);
+//   }
 
-  res.status(200).json({
-    status: httpStatus.success,
-    product,
-  });
-});
+//   res.status(200).json({
+//     status: httpStatus.success,
+//     product,
+//   });
+// });
 
 // @desc Create a new product
 // @route POST /api/v1/products
